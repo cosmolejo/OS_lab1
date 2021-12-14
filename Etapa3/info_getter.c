@@ -4,7 +4,7 @@
 #include <errno.h>
 #include "linkedlist.h"
 
-data get_info(char statFileName[],int *flag)
+data get_info(char statFileName[], int *flag)
 {
 
     data datos;

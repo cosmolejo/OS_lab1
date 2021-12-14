@@ -1,0 +1,9 @@
+-- Información recolectada!!!
+PID: 	10658
+Nombre del proceso: 	emacs
+Estado: 	S (sleeping)
+Tamaño total de la imagen de memoria: 	  389224 kB
+	Tamaño de la memoria de la región TEXT:  	   74876 kB
+	Tamaño de la memoria de la región DATA: 	     160 kB
+	Tamaño de la memoria de la región STACK: 	    2016 kB
+Número de cambios de contexto realizados (voluntarios - no voluntarios): 	1207 - 	101
