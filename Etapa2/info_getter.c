@@ -1,20 +1,20 @@
 #include <unistd.h>
 #include <stdio.h>
-#include <string.h> 
-int main(int argc, char *argv[])
+#include <string.h>
+#include <errno.h>
+#include "linkedlist.h"
+
+data get_info(char statFileName[])
 {
-    if (argc < 2)
-        return perror("Falta un argumento"), 1;
 
-    char statFileName[128]; /* /proc/PIC/status - I think 512 bytes is far enough */
-
-    sprintf(statFileName, "/proc/%s/status", argv[1]);
+    data datos;
     FILE *fd = fopen(statFileName, "r");
-    
+
     char
         *value,
         *aux,
-         name[32],
+        pid[15],
+        name[32],
         state[80],
         line[512],
         temp[512],
@@ -23,17 +23,21 @@ int main(int argc, char *argv[])
         vmStk[512],
         vmExe[512],
         v_ctx_swt[512],
-        nv_ctx_swt[512]; 
-    int i = 0; 
-    if (fd == NULL)
-        return perror("No puedo encontrar el proceso especificado"), 1;
-
-
+        nv_ctx_swt[512];
+    int i = 0;
+    if (fd == NULL){
+        perror("No puedo encontrar el proceso especificado");
+        return datos;
+    }
     while (fgets(line, sizeof(line), fd))
     {
-        
+
         value = strtok(line, ":");
         aux = strtok(NULL, "\n");
+        if (strcmp(value, "Pid") == 0)
+        {
+            strcpy(pid, aux);
+        }
         if (strcmp(value, "Name") == 0)
         {
             strcpy(name, aux);
@@ -42,7 +46,8 @@ int main(int argc, char *argv[])
         {
             strcpy(state, aux);
         }
-         if (strcmp(value, "VmSize") == 0)
+
+        if (strcmp(value, "VmSize") == 0)
         {
             strcpy(vmSize, aux);
         }
@@ -72,15 +77,19 @@ int main(int argc, char *argv[])
         aux = memset(aux, 0, strlen(aux));
     }
 
-    fclose(fd); 
-    printf("-------OUTPUT-------\n");
-    printf("Nombre del proceso: %s\n", name); // Finalmente se imprime la información extraída del archivo
-    printf("Estado: %s\n", state);
-    printf("Tamaño total de la imagen de memoria: %s\n", vmSize);
-    printf("\tTamaño de la memoria de la región TEXT:  %s\n", vmData);
-    printf("\tTamaño de la memoria de la región DATA: %s\n", vmStk);
-    printf("\tTamaño de la memoria de la región STACK: %s\n", vmExe);
-    printf("Número de cambios de contexto realizados (voluntarios - no voluntarios): %s - %s\n",
-     v_ctx_swt,nv_ctx_swt);
+    fclose(fd);
 
+    strcpy(datos.pid, pid);
+    strcpy(datos.name, name);
+    strcpy(datos.state, state);
+    strcpy(datos.line, line);
+    strcpy(datos.temp, temp);
+    strcpy(datos.vmSize, vmSize);
+    strcpy(datos.vmData, vmData);
+    strcpy(datos.vmStk, vmStk);
+    strcpy(datos.vmExe, vmExe);
+    strcpy(datos.v_ctx_swt, v_ctx_swt);
+    strcpy(datos.nv_ctx_swt, nv_ctx_swt);
+
+   return datos;
 }
